@@ -1,0 +1,7 @@
+## Interface: 60100
+## Title: ScornStone
+## Notes: Heal Scorned!
+## Version: 0.0.1
+
+ScornStone.lua
+ScornStone.xml
