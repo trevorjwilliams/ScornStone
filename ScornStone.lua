@@ -1,35 +1,42 @@
-local targetName = "Scorned"
+local watchedGUID
 local soulStone = 20707
 local darkIntent = 109773 -- For debugging
 local funItem = "Seafarer's Slidewhistle"
 
-function ScornStone(self, event, ...) 
+-- Not using "self" or "event" right now, but if I need them in the future reindexing all of the select calls would be a pain.
+function ScornStone(self, event, ...)
+	local eventType = select(2, ...)
+	local targetGUID, targetName = select(8, ...)
+
+	-- First, check to see if we need to watch someone new.
 	if (
-		event == "COMBAT_LOG_EVENT_UNFILTERED"
+		eventType == "SPELL_CAST_SUCCESS"
 	) then
 
-		DidScornedDie(self, event, ...)
+		local spellid = select(11, ...);
+		if (
+			and spellid == soulStone
+		) then
+
+			watchedGUID = targetGUID
+			SendChatMessage(targetName .. ", I believe in you.");
+			-- Still need to figure out how to do this.
+			-- UseItemByName(funItem)
+		end
 	end
-
-	local unit, name, rank, lineid, spellid = ...;
-	if (
-		unit == "player"
-		and spellid == darkIntent
+	-- Failing that, see if our current target kicked the bucket.
+	elseif (
+		eventType == "UNIT_DIED"
 	) then
 
-		SendChatMessage(targetName .. ", I believe in you.");
-		UseItemByName(funItem);
-	end
-end
+		if (
+			watchedGUID
+			and targetGUID == watchedGUID
+		) then
 
-function DidScornedDie(self, event, ...)
-	local timestamp, combatEvent, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName = ...;
-
-	if (
-		combatEvent == "UNIT_DIED"
-		and destName == targetName
-	) then
-
-		SendChatMessage(targetName .. ", I'm not angry, just disappointed.");
+			SendChatMessage(targetName .. ", I'm not angry, just disappointed.");
+			-- Probably better to unregister the event.  Maybe someday!
+			watchedGUID = nil
+		end
 	end
 end

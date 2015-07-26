@@ -3,7 +3,6 @@
         <Frame name="ScornStoneFrame">
                 <Scripts>
                         <OnLoad>
-				self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED");
 				self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
                         </OnLoad>
 			<OnEvent function="ScornStone"/>
